@@ -7,7 +7,7 @@ using namespace std;
 const int NAME_SIZE = 20;
 const int DEPT_NAME_SIZE = 5;
 
-const int DYNAMIC_STUDENT_HEAP_SIZE = 5;
+const int DYNAMIC_STUDENT_HEAP_SIZE = 1;
 
 class student
 {
@@ -23,7 +23,7 @@ public:
     void readStudentData();
     void printStudentData() const;
     void *operator new(size_t size);
-    // void operator delete(void *p);
+    void operator delete(void *p);
 
     static student *data;
     static bool data_occupied[DYNAMIC_STUDENT_HEAP_SIZE];
@@ -54,15 +54,24 @@ void *student::operator new(size_t size)
         {
             data_occupied[i] = true;
             s = (void *)&data[i];
+            return s;
         }
     }
-    return s;
+
+    cout << "Error: No more dynamic data left!!, returning NULL" << endl;
+    return NULL;
 }
 
-// void student::operator delete(void *p)
-// {
-//     free(((student *)p));
-// }
+void student::operator delete(void *p)
+{
+    for (int i = 0; i < DYNAMIC_STUDENT_HEAP_SIZE; i++)
+    {
+        if (&data[i] == (student *)p)
+        {
+            data_occupied[i] = false;
+        }
+    }
+}
 
 void student::readStudentData(ifstream &fin)
 {
@@ -148,11 +157,18 @@ int main()
     cout << endl
          << "Doing Pointers..." << endl;
 
-    student *dynamic = new student;
-    dynamic->readStudentData();
-    dynamic->printStudentData();
+    student *dynamic1 = new student;
+    dynamic1->readStudentData();
+    dynamic1->printStudentData();
 
-    delete dynamic;
+    student *dynamic2 = new student;
+    dynamic2->readStudentData();
+
+    delete dynamic1;
+
+    dynamic2->printStudentData();
+
+    delete dynamic2;
 
     return 0;
 }
