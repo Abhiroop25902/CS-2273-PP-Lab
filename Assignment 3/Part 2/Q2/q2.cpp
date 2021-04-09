@@ -7,7 +7,7 @@ using namespace std;
 const int NAME_SIZE = 20;
 const int DEPT_NAME_SIZE = 5;
 
-const int DYNAMIC_STUDENT_HEAP_SIZE = 1;
+const int DYNAMIC_STUDENT_HEAP_SIZE = 5;
 
 typedef unsigned char byte;
 
@@ -27,15 +27,18 @@ public:
     void *operator new(size_t size);
     void operator delete(void *p);
 
-    static void initialized_dynamic_data();
+    static bool *data_occupied;
     static byte *data;
-    static bool data_occupied[DYNAMIC_STUDENT_HEAP_SIZE];
+    static void initialize_dynamic_data();
 };
 
-void student::initialized_dynamic_data()
+byte *student::data = NULL;
+bool *student::data_occupied = NULL;
+
+void student::initialize_dynamic_data()
 {
-    data = (byte *)malloc(sizeof(student) * DYNAMIC_STUDENT_HEAP_SIZE);
-    data_occupied[DYNAMIC_STUDENT_HEAP_SIZE] = {false};
+    data = new byte[sizeof(student) * DYNAMIC_STUDENT_HEAP_SIZE];
+    data_occupied = new bool[DYNAMIC_STUDENT_HEAP_SIZE];
 }
 
 student::~student()
@@ -108,74 +111,28 @@ void student::printStudentData() const
 
 int main()
 {
-    // cout << "Enter Number of Record to be added: ";
-    // int n;
-    // cin >> n;
-    // cin.ignore(); //ignore newline
-    // cout << endl;
+    cout << "Doing Pointers..." << endl;
 
-    // student s[n];
-
-    // for (int i = 0; i < n; i++)
-    // {
-    //     cout << "Enter Detail of Student " << i + 1 << ":" << endl;
-    //     s[i].readStudentData();
-    //     cout << endl;
-    // }
-
-    // cout << "Output: " << endl;
-
-    // for (int i = 0; i < n; i++)
-    // {
-    //     cout << "Data of Student " << i + 1 << ":" << endl;
-    //     s[i].printStudentData();
-    //     cout << endl;
-    // }
-
-    // char filename[] = "./data.txt";
-
-    // ifstream fin;
-    // fin.open(filename, ios::in);
-
-    // cout << "Input through " << filename << endl;
-    // student a[2];
-    // int i = 0;
-
-    // while (!fin.eof())
-    // {
-    //     a[i].readStudentData(fin);
-    //     i++;
-    // }
-
-    // cout << "Data of Student"
-    //      << ":" << endl;
-
-    // for (int i = 0; i < 2; i++)
-    // {
-    //     a[i].printStudentData();
-    // }
-
-    // cout << endl;
-
-    // fin.close();
-
-    cout << endl
-         << "Doing Pointers..." << endl;
-
-    student::initialized_dynamic_data();
+    student::initialize_dynamic_data();
 
     student *dynamic1 = new student;
     dynamic1->readStudentData();
-    dynamic1->printStudentData();
+    // dynamic1->printStudentData();
 
     student *dynamic2 = new student;
     dynamic2->readStudentData();
+    // dynamic2->printStudentData();
+
+    student *dynamic3 = new student;
+    dynamic3->readStudentData();
+
+    dynamic1->printStudentData();
+    dynamic2->printStudentData();
+    dynamic3->printStudentData();
 
     delete dynamic1;
-
-    dynamic2->printStudentData();
-
     delete dynamic2;
+    delete dynamic3;
 
     return 0;
 }
