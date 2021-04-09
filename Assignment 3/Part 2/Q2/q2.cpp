@@ -9,6 +9,8 @@ const int DEPT_NAME_SIZE = 5;
 
 const int DYNAMIC_STUDENT_HEAP_SIZE = 1;
 
+typedef unsigned char byte;
+
 class student
 {
     char *name;
@@ -25,13 +27,16 @@ public:
     void *operator new(size_t size);
     void operator delete(void *p);
 
-    static student *data;
+    static void initialized_dynamic_data();
+    static byte *data;
     static bool data_occupied[DYNAMIC_STUDENT_HEAP_SIZE];
 };
 
-student *student::data = (student *)malloc(sizeof(student) * DYNAMIC_STUDENT_HEAP_SIZE);
-
-bool student::data_occupied[DYNAMIC_STUDENT_HEAP_SIZE] = {false};
+void student::initialized_dynamic_data()
+{
+    data = (byte *)malloc(sizeof(student) * DYNAMIC_STUDENT_HEAP_SIZE);
+    data_occupied[DYNAMIC_STUDENT_HEAP_SIZE] = {false};
+}
 
 student::~student()
 {
@@ -53,7 +58,7 @@ void *student::operator new(size_t size)
         if (data_occupied[i] == false)
         {
             data_occupied[i] = true;
-            s = (void *)&data[i];
+            s = (void *)&data[i * sizeof(student)];
             return s;
         }
     }
@@ -66,7 +71,7 @@ void student::operator delete(void *p)
 {
     for (int i = 0; i < DYNAMIC_STUDENT_HEAP_SIZE; i++)
     {
-        if (&data[i] == (student *)p)
+        if (&data[i] == (byte *)p)
         {
             data_occupied[i] = false;
         }
@@ -156,6 +161,8 @@ int main()
 
     cout << endl
          << "Doing Pointers..." << endl;
+
+    student::initialized_dynamic_data();
 
     student *dynamic1 = new student;
     dynamic1->readStudentData();
