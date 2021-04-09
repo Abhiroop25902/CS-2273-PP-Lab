@@ -7,6 +7,8 @@ using namespace std;
 const int NAME_SIZE = 20;
 const int DEPT_NAME_SIZE = 5;
 
+const int DYNAMIC_STUDENT_HEAP_SIZE = 5;
+
 class student
 {
     char *name;
@@ -21,8 +23,15 @@ public:
     void readStudentData();
     void printStudentData() const;
     void *operator new(size_t size);
-    void operator delete(void *p);
+    // void operator delete(void *p);
+
+    static student *data;
+    static bool data_occupied[DYNAMIC_STUDENT_HEAP_SIZE];
 };
+
+student *student::data = (student *)malloc(sizeof(student) * DYNAMIC_STUDENT_HEAP_SIZE);
+
+bool student::data_occupied[DYNAMIC_STUDENT_HEAP_SIZE] = {false};
 
 student::~student()
 {
@@ -38,14 +47,22 @@ student::student() : age(-1), year_grad(-1)
 
 void *student::operator new(size_t size)
 {
-    void *s = malloc(size);
+    void *s;
+    for (int i = 0; i < DYNAMIC_STUDENT_HEAP_SIZE; i++)
+    {
+        if (data_occupied[i] == false)
+        {
+            data_occupied[i] = true;
+            s = (void *)&data[i];
+        }
+    }
     return s;
 }
 
-void student::operator delete(void *p)
-{
-    free(((student *)p));
-}
+// void student::operator delete(void *p)
+// {
+//     free(((student *)p));
+// }
 
 void student::readStudentData(ifstream &fin)
 {
@@ -77,56 +94,56 @@ void student::printStudentData() const
 
 int main()
 {
-    cout << "Enter Number of Record to be added: ";
-    int n;
-    cin >> n;
-    cin.ignore(); //ignore newline
-    cout << endl;
+    // cout << "Enter Number of Record to be added: ";
+    // int n;
+    // cin >> n;
+    // cin.ignore(); //ignore newline
+    // cout << endl;
 
-    student s[n];
+    // student s[n];
 
-    for (int i = 0; i < n; i++)
-    {
-        cout << "Enter Detail of Student " << i + 1 << ":" << endl;
-        s[i].readStudentData();
-        cout << endl;
-    }
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << "Enter Detail of Student " << i + 1 << ":" << endl;
+    //     s[i].readStudentData();
+    //     cout << endl;
+    // }
 
-    cout << "Output: " << endl;
+    // cout << "Output: " << endl;
 
-    for (int i = 0; i < n; i++)
-    {
-        cout << "Data of Student " << i + 1 << ":" << endl;
-        s[i].printStudentData();
-        cout << endl;
-    }
+    // for (int i = 0; i < n; i++)
+    // {
+    //     cout << "Data of Student " << i + 1 << ":" << endl;
+    //     s[i].printStudentData();
+    //     cout << endl;
+    // }
 
-    char filename[] = "./data.txt";
+    // char filename[] = "./data.txt";
 
-    ifstream fin;
-    fin.open(filename, ios::in);
+    // ifstream fin;
+    // fin.open(filename, ios::in);
 
-    cout << "Input through " << filename << endl;
-    student a[2];
-    int i = 0;
+    // cout << "Input through " << filename << endl;
+    // student a[2];
+    // int i = 0;
 
-    while (!fin.eof())
-    {
-        a[i].readStudentData(fin);
-        i++;
-    }
+    // while (!fin.eof())
+    // {
+    //     a[i].readStudentData(fin);
+    //     i++;
+    // }
 
-    cout << "Data of Student"
-         << ":" << endl;
+    // cout << "Data of Student"
+    //      << ":" << endl;
 
-    for (int i = 0; i < 2; i++)
-    {
-        a[i].printStudentData();
-    }
+    // for (int i = 0; i < 2; i++)
+    // {
+    //     a[i].printStudentData();
+    // }
 
-    cout << endl;
+    // cout << endl;
 
-    fin.close();
+    // fin.close();
 
     cout << endl
          << "Doing Pointers..." << endl;
