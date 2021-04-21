@@ -78,6 +78,36 @@ Vehicle::~Vehicle()
         delete[] manufacturer;
 }
 
+// class Car : public Vehicle
+// {
+//     char *color;
+//     unsigned short no_of_seats;
+//     char *model;
+
+// public:
+//     Car() : color(NULL), no_of_seats(0), model(NULL) {}
+//     Car(const char *col, unsigned const short seats, const char *mod);
+//     Car(const Car &);
+// };
+
+// Car::Car(const char *col, unsigned const short seats, const char *mod) : no_of_seats(seats)
+// {
+//     color = new char[strlen(col) + 1]; //+1 for \n
+//     strcpy(color, col);
+
+//     model = new char[strlen(mod) + 1]; //+1 for \n
+//     strcpy(model, mod);
+// }
+
+// Car::Car(const Car &obj) : no_of_seats(obj.no_of_seats)
+// {
+//     color = new char[strlen(obj.color) + 1]; //+1 for \n
+//     strcpy(color, obj.color);
+
+//     model = new char[strlen(obj.model) + 1]; //+1 for \n
+//     strcpy(model, obj.model);
+// }
+
 int main()
 {
     // Vehicle v1;
