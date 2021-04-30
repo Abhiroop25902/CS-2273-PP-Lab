@@ -2,190 +2,201 @@
 using namespace std;
 #include <string.h>
 
-#include "person.h"
+const int DEFAULT_STRING_SIZE = 10;
 
-class Student : public Person
+class Person
 {
-    char department[DEFAULT_STRING_SIZE];
-    unsigned int year;
+    char name[DEFAULT_STRING_SIZE];
+    unsigned int age;
+    char gender;
 
 public:
-    Student() : department("\n"), year(0) {}
-    Student(const char *name, unsigned int age, char gender, const char *department, unsigned int year);
-    Student(const Student &rhs);
-    Student &operator=(const Student &rhs);
+    Person() : name("\n"), age(0), gender('-') {}
+    Person(const char *given_name, unsigned int given_age, char given_gender) : age(given_age), gender(given_gender)
+    {
+        strcpy(name, given_name);
+    }
     void read_data();
     void display_data();
 };
 
-Student::Student(const char *name, unsigned int age, char gender, const char *given_department, unsigned int given_year) : Person(name, age, gender), year(given_year)
+void Person::read_data()
 {
-    strcpy(department, given_department);
+    cout << "Enter Name: ";
+    cin >> name;
+    cout << "Enter Age: ";
+    cin >> age;
+    cout << "Enter Gender (single char only): ";
+    cin >> gender;
 }
 
-Student::Student(const Student &rhs) : Person(rhs), year(rhs.year)
+void Person::display_data()
 {
-    strcpy(department, rhs.department);
+    cout << "Name: " << name << endl;
+    cout << "Age: " << age << endl;
+    cout << "Gender: " << gender << endl;
 }
 
-Student &Student::operator=(const Student &rhs)
+class Academic : virtual public Person
 {
-    if (this == &rhs)
-        return *this;
+    char department[DEFAULT_STRING_SIZE];
 
-    (Person &)(*this) = rhs;
+public:
+    Academic() : department("\n") {}
+    Academic(const char *given_name, unsigned int given_age, char given_gender, const char *given_dept) : Person(given_name, given_age, given_gender)
+    {
+        strcpy(department, given_dept);
+    }
+    void read_data();
+    void display_data();
+    const char *return_department()
+    {
+        return department;
+    }
+    void read_department()
+    {
+        cout << "Enter Department: ";
+        cin >> department;
+    }
+};
 
-    strcpy(department, rhs.department);
-    year = rhs.year;
-
-    return *this;
+void Academic::read_data()
+{
+    Person::read_data();
+    read_department();
 }
+
+void Academic::display_data()
+{
+    Person::display_data();
+    cout << "Department: " << department << endl;
+}
+
+class Professional : virtual public Person
+{
+    double salary;
+
+public:
+    Professional() : salary(0) {}
+    Professional(const char *given_name, unsigned int given_age, char given_gender, const double given_salary) : Person(given_name, given_age, given_gender), salary(given_salary) {}
+    void read_data();
+    void display_data();
+    double return_salary()
+    {
+        return salary;
+    }
+    void read_salary()
+    {
+        cout << "Enter Salary: ";
+        cin >> salary;
+    }
+};
+
+void Professional::read_data()
+{
+    Person::read_data();
+    read_salary();
+}
+
+void Professional::display_data()
+{
+    Person::display_data();
+    cout << "Salary: " << salary << endl;
+}
+
+class Student : public Academic
+{
+    unsigned int year;
+
+public:
+    Student() : year(0) {}
+    Student(const char *given_name, unsigned int given_age, char given_gender, const char *given_dept, const unsigned int given_year) : Academic(given_name, given_age, given_gender, given_dept), year(given_year), Person(given_name, given_age, given_gender) {}
+    void read_data();
+    void display_data();
+};
 
 void Student::read_data()
 {
-    Person::read_data();
-
-    cout << "Enter Department: ";
-    cin >> department;
-
-    cout << "Enter Graduation Year: ";
+    Academic::read_data();
+    cout << "Enter Year: ";
     cin >> year;
 }
 
 void Student::display_data()
 {
-    Person::display_data();
-    cout << "Department: " << department << endl;
-    cout << "Graduation year: " << year << endl;
+    Academic::display_data();
+    cout << "Year: " << year << endl;
 }
 
-class Clerk : public Person
+class Clerk : public Professional
 {
-    char workload[DEFAULT_STRING_SIZE];
-    float salary;
+    char workLoad[DEFAULT_STRING_SIZE];
 
 public:
-    Clerk() : workload("\n"), salary(0) {}
-    Clerk(const char *name, unsigned int age, char gender, const char *given_workload, float given_salary);
-    Clerk(const Clerk &rhs);
-    Clerk &operator=(const Clerk &rhs);
+    Clerk() : workLoad("\n") {}
+    Clerk(const char *given_name, unsigned int given_age, char given_gender, const double given_salary, const char *given_work) : Professional(given_name, given_age, given_gender, given_salary), Person(given_name, given_age, given_gender)
+    {
+        strcpy(workLoad, given_work);
+    }
     void read_data();
     void display_data();
 };
 
-Clerk::Clerk(const char *name, unsigned int age, char gender, const char *given_workload, float given_salary) : Person(name, age, gender), salary(given_salary)
-{
-    strcpy(workload, given_workload);
-}
-
-Clerk::Clerk(const Clerk &rhs) : Person(rhs), salary(rhs.salary)
-{
-    strcpy(workload, rhs.workload);
-}
-
-Clerk &Clerk::operator=(const Clerk &rhs)
-{
-    if (this == &rhs)
-        return *this;
-
-    (Person &)(*this) = rhs; //using assignment operator of Person Class
-
-    strcpy(workload, rhs.workload);
-    salary = rhs.salary;
-
-    return *this;
-}
-
 void Clerk::read_data()
 {
-    Person::read_data();
-    cout << "Enter Workload: ";
-    cin >> workload;
-    cout << "Enter Salary: ";
-    cin >> salary;
+    Professional::read_data();
+    cout << "Enter Work-Load: ";
+    cin >> workLoad;
 }
 
 void Clerk::display_data()
 {
-    Person::display_data();
-    cout << "Workload: " << workload << endl;
-    cout << "Salary: " << salary << endl;
+    Professional::display_data();
+    cout << "Work-Load: " << workLoad << endl;
 }
 
-class Professor : public Person
+class Professor : public Professional, public Academic
 {
-    char department[DEFAULT_STRING_SIZE];
     char courseLoad[DEFAULT_STRING_SIZE];
-    float salary;
 
 public:
-    Professor() : department("\n"), courseLoad("\n"), salary(0) {}
-    Professor(const char *name, unsigned int age, char gender, const char *given_department, const char *given_courseLoad, float given_salary);
-    Professor(const Professor &rhs);
-    Professor &operator=(const Professor &rhs);
-    void read_data();
+    Professor() : courseLoad("\n") {}
+    Professor(const char *name, unsigned int age, char gender, const char *department, const char *given_courseLoad, double salary) : Professional(name, age, gender, salary), Academic(name, age, gender, department), Person(name, age, gender)
+    {
+        strcpy(courseLoad, given_courseLoad);
+    }
     void display_data();
+    void read_data();
 };
 
-Professor::Professor(const char *name, unsigned int age, char gender, const char *given_department, const char *given_courseLoad, float given_salary) : Person(name, age, gender), salary(given_salary)
+void Professor::display_data()
 {
-    strcpy(department, given_department);
-    strcpy(courseLoad, given_courseLoad);
-}
-
-Professor::Professor(const Professor &rhs) : Person(rhs), salary(rhs.salary)
-{
-    strcpy(department, rhs.department);
-    strcpy(courseLoad, rhs.courseLoad);
-}
-
-Professor &Professor::operator=(const Professor &rhs)
-{
-    if (this == &rhs)
-        return *this;
-
-    (Person &)(*this) = rhs; //invoking assignment operator of Person
-
-    strcpy(department, rhs.department);
-    strcpy(courseLoad, rhs.courseLoad);
-    salary = rhs.salary;
-
-    return *this;
+    Person::display_data();
+    cout << "Department: " << Academic::return_department() << endl;
+    cout << "Course-Load: " << courseLoad << endl;
+    cout << "Salary: " << Professional::return_salary() << endl;
 }
 
 void Professor::read_data()
 {
     Person::read_data();
-    cout << "Enter Department: ";
-    cin >> department;
-    cout << "Enter CourseLoad: ";
-    cin >> courseLoad;
-    cout << "Enter Salary: ";
-    cin >> salary;
-}
-
-void Professor::display_data()
-{
-    Person::display_data();
-    cout << "Department: " << department << endl;
-    cout << "CourseLoad: " << courseLoad << endl;
-    cout << "Salary: " << salary << endl;
+    Academic::read_department();
+    Professional::read_salary();
+    cout<<"Enter Course-Load: ";
+    cin>>courseLoad;
 }
 
 int main()
 {
-    Professor *p1 = new Professor;
-    p1->read_data();
-    p1->display_data();
+    Student s("Abhiroop",18,'M',"CST",2023);
+    s.display_data();
+    cout<<endl;
 
-    Professor p2("Sanjana", 21, 'F', "CST", "CS-2201", 200000);
-    p2.display_data();
+    Clerk c("Seele",23,'F',200000,"Paperwork");
+    c.display_data();
+    cout<<endl;
 
-    Professor p3 = *p1;
-    delete[] p1;
-    p3.display_data();
-
-    Professor p4;
-    p4 = p2;
-    p4.display_data();
+    Professor p;
+    p.read_data();
+    p.display_data();
 }
