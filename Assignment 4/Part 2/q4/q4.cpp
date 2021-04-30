@@ -9,6 +9,7 @@ class Shape
 public:
     virtual void read() = 0;
     virtual double calc_area() = 0;
+    virtual void display() = 0;
 };
 
 class Triangle : public Shape
@@ -21,10 +22,13 @@ public:
     Triangle(const double given_base, const double given_height) : base(given_base), height(given_height) {}
     double calc_area()
     {
-
         return 0.5 * base * height;
     }
     void read();
+    void display()
+    {
+        cout << "Triangle: Base " << base << " Height: " << height << endl;
+    }
 };
 
 void Triangle::read()
@@ -47,8 +51,11 @@ public:
     {
         return length * breadth;
     }
-
     void read();
+    void display()
+    {
+        cout << "Rectangle: Length: " << length << " Breadth: " << breadth << endl;
+    }
 };
 void Rectangle::read()
 {
@@ -72,6 +79,10 @@ public:
         return pi * radius * radius;
     }
     void read();
+    void display()
+    {
+        cout << "Circle: Radius: " << radius << endl;
+    }
 };
 
 void Circle::read()
@@ -80,42 +91,121 @@ void Circle::read()
     cin >> radius;
 }
 
+const int DEFAULT_STACK_SIZE = 10;
+
+class ShapeStack
+{
+    Shape *stack[DEFAULT_STACK_SIZE] = {NULL};
+    double total_area;
+    int pos;
+
+public:
+    ShapeStack() : total_area(0), pos(0) {}
+    void push();
+    void pop();
+    //pos will be 0 indexed
+    void display(const int pos);
+    void displayAll();
+    double TotalAreaCovered()
+    {
+        return total_area;
+    }
+};
+
+void ShapeStack::push()
+{
+    if (pos == DEFAULT_STACK_SIZE - 1)
+    {
+        cout << "Error: Stack is Full" << endl;
+        return;
+    }
+
+    cout << "Enter Shape:" << endl
+         << "1) Triangle" << endl
+         << "2) Rectangle" << endl
+         << "3) Circle" << endl
+         << "Input: ";
+
+    int choice;
+    cin >> choice;
+
+    switch (choice)
+    {
+    case 1:
+        stack[pos] = new Triangle;
+        stack[pos]->read();
+        total_area += stack[pos]->calc_area();
+        break;
+    case 2:
+        stack[pos] = new Rectangle;
+        stack[pos]->read();
+        total_area += stack[pos]->calc_area();
+        break;
+    case 3:
+        stack[pos] = new Circle;
+        stack[pos]->read();
+        total_area += stack[pos]->calc_area();
+        break;
+
+    default:
+        cout << "Error Wrong Option!!" << endl;
+        return;
+        break;
+    }
+    pos++;
+}
+
+void ShapeStack::display(const int pos)
+{
+    if (pos >= DEFAULT_STACK_SIZE || pos < 0)
+        cout << "Error: Given Position Out of bounds" << endl;
+    else if (stack[pos] == NULL)
+        cout << "Error: Position's data is NULL" << endl;
+    else
+        stack[pos]->display();
+}
+
+void ShapeStack::displayAll()
+{
+    int temp = 0;
+    while (stack[temp] != NULL)
+    {
+        stack[temp]->display();
+        temp++;
+    }
+}
+
+void ShapeStack::pop()
+{
+    cout << "Following Shape will be deleted: " << endl;
+    stack[pos - 1]->display();
+    cout << "Are You Sure you want to pop?(y,n): ";
+    char choice;
+    cin >> choice;
+
+    switch (choice)
+    {
+    case 'y':
+        delete stack[pos - 1];
+        stack[pos - 1] = NULL;
+        pos--;
+        break;
+    default:
+        cout << "Not Deleted!!" << endl;
+        break;
+    }
+}
+
 int main()
 {
-    srand(time(0));
+    ShapeStack s;
+    s.push();
+    s.push();
+    s.push();
+    s.displayAll();
+    s.pop();
+    s.displayAll();
+    cout << "Area: " << s.TotalAreaCovered();
 
-    float sum_area = 0;
-    int counter = 0;
-    int num_rand;
-
-    Shape *shape_ptr[10];
-
-    num_rand = rand() % 2 + 1;
-
-    for (int i = counter; i < counter + num_rand; i++)
-    {
-        shape_ptr[i] = new Triangle(rand() % 10 + 1, rand() % 10 + 1);
-        sum_area += shape_ptr[i]->calc_area();
-    }
-
-    counter += num_rand;
-
-    num_rand = rand() % 2 + 1;
-
-    for (int i = counter; i < counter + num_rand; i++)
-    {
-        shape_ptr[i] = new Rectangle(rand() % 10 + 1, rand() % 10 + 1);
-        sum_area += shape_ptr[i]->calc_area();
-    }
-
-    counter += num_rand;
-
-    for (int i = counter; i < 10; i++)
-    {
-        shape_ptr[i] = new Circle(rand() % 10 + 1);
-        sum_area += shape_ptr[i]->calc_area();
-    }
-
-    cout << "Sum of Areas: " << sum_area << endl;
     return 0;
 }
